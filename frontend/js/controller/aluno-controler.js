@@ -1,35 +1,43 @@
-const alunoController = {
-    
-    iniciar() {
-        let continuar = true;
+const AlunoController = {
 
-        while(continuar) {
+	iniciar() {
 
-            const dados = AlunoView.lerDados();
+		AlunoView.inicializar();
 
-            const resultado = AlunoModel.cadastrar(dados);
+		AlunoView.configurarFormulario(
+			function (dados) {
+				AlunoController.cadastrar(dados)
+			}
+		);
 
-            if (resultado.sucesso) {
-                AlunoView.exibirAluno(resultado.aluno);
-            } else {
-                AlunoView.exibirErro(resultado.mensagem)
-            }
+		AlunoController.atualizarVisualizacao();
+	},
+	cadastrar(dados) {
 
-            continuar = AlunoView.perguntarNovoCadastro();
-        }
+		const resultado = AlunoModel.cadastrar(dados);
 
-        const alunos = AlunoModel.listar();
+		if (!resultado.sucesso) {
+			AlunoView.exibirErro(resultado.mensagem);
+			return;
+		}
 
-        AlunoView.exibirLista(alunos);
+		AlunoView.exibirSucesso(
+			`Aluno ${resultado.aluno.nome} cadastrado com sucesso.`
+		);
 
-        const textoJson = JSON.stringify(alunos, null, 2);
+		AlunoView.limparFormulario();
 
-        AlunoView.exibirJson(textoJson)
+		AlunoController.atualizarVisualizacao();
+	},
+	atualizarVisualizacao() {
+		const alunos = AlunoModel.listar();
 
-        const dadosRecuperados =JSON.parse(textoJson);
+		AlunoView.exibirLista(alunos);
 
-        AlunoView.exibirDadosRecuperdos(dadosRecuperados);
-    }
+		const textoJson = JSON.stringify(alunos, null, 2);
+
+		AlunoView.exibirJson(textoJson);
+	}
 }
 
-alunoController.iniciar();
+AlunoController.iniciar();
