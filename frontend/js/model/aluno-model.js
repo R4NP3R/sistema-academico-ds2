@@ -1,9 +1,10 @@
 const AlunoModel = {
   alunos: [],
   normalizarTexto(valor) {
-    if (valor == null || valor == undefined) {
-      return ""
+    if (valor === null || valor === undefined) {
+      return "";
     }
+    return String(valor).trim();
   },
   validarEmail(email) {
     return email.includes("@") && email.includes(".");
