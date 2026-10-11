@@ -21,6 +21,8 @@ const AlunoView = {
       document.getElementById("total-alunos");
     AlunoView.elementos.saidaJson =
       document.getElementById("saida-json");
+    AlunoView.elementos.botaoLimpar =
+      document.getElementById("btn-limpa-dados");
   },
 
   configurarFormulario(aoEnviar) {
@@ -36,6 +38,15 @@ const AlunoView = {
     )
   },
 
+  configurarBotaoLimpar(aoLimpar) {
+    AlunoView.elementos.botaoLimpar.addEventListener(
+      "click",
+      () => {
+        aoLimpar();
+      }
+    )
+  },
+
   lerDados() {
     return {
       ra: AlunoView.elementos.ra.value,
@@ -44,6 +55,12 @@ const AlunoView = {
       curso: AlunoView.elementos.curso.value,
       turma: AlunoView.elementos.turma.value,
     };
+  },
+
+  confirmarLimpeza() {
+    return confirm(
+      "Deseja remover todos os alunos cadastrados?"
+    )
   },
 
   exibirSucesso(mensagem) {
@@ -63,13 +80,13 @@ const AlunoView = {
 
     AlunoView.elementos.ra.focus();
   },
-  
+
   exibirLista(alunos) {
     const corpoTabela = AlunoView.elementos.corpoTabela;
 
     corpoTabela.textContent = "";
 
-    AlunoView.elementos.totalAlunos.textContent = 
+    AlunoView.elementos.totalAlunos.textContent =
       `Total: ${alunos.length}`;
 
     if (alunos.length === 0) {
@@ -77,7 +94,7 @@ const AlunoView = {
       const celula = document.createElement("td");
 
       celula.colSpan = 7;
-      celula.textContent = "Nenhum Foi cadastrado.";
+      celula.textContent = "Nenhum aluno foi cadastrado.";
 
       linha.appendChild(celula);
       corpoTabela.appendChild(linha);

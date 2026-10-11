@@ -1,6 +1,4 @@
 const AlunoModel = {
-  alunos: [],
-
   normalizarTexto(valor) {
     if (valor === null || valor === undefined) {
       return "";
@@ -13,13 +11,26 @@ const AlunoModel = {
     return email.includes("@") && email.includes(".");
   },
 
-  localizarPorRa(ra) {
-    return AlunoModel.alunos.find(
+  localizarPorRa(alunos, ra) {
+    return alunos.find(
       aluno => aluno.ra === ra
     );
   },
+  
+  gerarProximoId(alunos) {
+    if (alunos.length === 0) {
+      return 1;
+    }
 
-  cadastrar(dados) {
+    const ids = alunos.map(
+      aluno => aluno.id
+    )
+
+    const maiorId = Math.max(...ids) + 1;
+
+    return maiorId;
+  },
+  criar(dados, alunos) {
 
     const ra = AlunoModel.normalizarTexto(dados.ra);
     const nome = AlunoModel.normalizarTexto(dados.nome);
@@ -36,7 +47,7 @@ const AlunoModel = {
     ) {
       return {
         sucesso: false,
-        mensagem: "Tdos os campos são obrigatórios."
+        mensagem: "Todos os campos são obrigatórios."
       }
     }
 
@@ -47,7 +58,7 @@ const AlunoModel = {
       };
     }
 
-    if (AlunoModel.localizarPorRa(ra)) {
+    if (AlunoModel.localizarPorRa(alunos, ra)) {
       return {
         sucesso: false,
         mensagem: "Já existe um aluno com esse RA."
@@ -55,7 +66,7 @@ const AlunoModel = {
     }
 
     const aluno = {
-      id: AlunoModel.alunos.length + 1,
+      id: AlunoModel.gerarProximoId(alunos),
       ra: ra,
       nome: nome,
       email: email,
@@ -63,18 +74,9 @@ const AlunoModel = {
       turma: turma,
       ativo: true
     }
-
-    AlunoModel.alunos.push(aluno);
-
     return {
       sucesso: true,
       aluno: aluno
     }
   },
-  
-  listar() {
-    return [...AlunoModel.alunos];
-  },
-
-  
 }
