@@ -1,36 +1,41 @@
 const AlunoController = {
-  
+
   iniciar() {
 
-    let continuar = true;
+    AlunoView.inicializar();
 
-    while (continuar) {
-
-      const dados = AlunoView.lerDados();
-
-      const resultado = AlunoModel.cadastrar(dados);
-
-      if (resultado.sucesso) {
-
-        AlunoView.exibirAluno(resultado.aluno);
-      } else {
-
-        AlunoView.exibirErro(resultado.mensagem);
+    AlunoView.configurarFormulario(
+      function (dados) {
+        AlunoController.cadastrar(dados);
       }
-      
-      continuar = AlunoView.perguntarNovoCadastro();
+    );
+
+    AlunoController.atualizarVisualizacao();
+  },
+  cadastrar(dados) {
+    const resultado = AlunoModel.cadastrar(dados);
+
+    if(!resultado.sucesso) {
+      AlunoView.exibirErro(resultado.mensagem);
+      return;
     }
+
+    AlunoView.exibirSucesso(
+      `Aluno ${resultado.aluno.nome} cadastrado com sucesso.`
+    );
+
+    AlunoView.limparFormulario();
+
+    AlunoController.atualizarVisualizacao();
+  },
+  atualizarVisualizacao() {
     const alunos = AlunoModel.listar();
 
     AlunoView.exibirLista(alunos);
 
-    const textoJson = JSON.stringify(alunos, null, 2);
+    const textoJson = JSON.stringify(alunos);
 
     AlunoView.exibirJson(textoJson);
-
-    const dadosRecuperados = JSON.parse(textoJson);
-
-    AlunoView.exibirDadosRecuperados(dadosRecuperados);
   }
 };
 
