@@ -21,32 +21,15 @@ const AlunoView = {
       document.getElementById("total-alunos");
     AlunoView.elementos.saidaJson =
       document.getElementById("saida-json");
-    AlunoView.elementos.botaoLimpar =
-      document.getElementById("btn-limpa-dados");
+    AlunoView.elementos.botaoSalvar =
+      document.getElementById("botao-salvar");
   },
-
   configurarFormulario(aoEnviar) {
     AlunoView.elementos.formulario.addEventListener(
       "submit",
-      function (e) {
-        e.preventDefault();
-
-        const dados = AlunoView.lerDados();
-
-        aoEnviar(dados);
-      }
-    )
+      aoEnviar
+    );
   },
-
-  configurarBotaoLimpar(aoLimpar) {
-    AlunoView.elementos.botaoLimpar.addEventListener(
-      "click",
-      () => {
-        aoLimpar();
-      }
-    )
-  },
-
   lerDados() {
     return {
       ra: AlunoView.elementos.ra.value,
@@ -56,38 +39,21 @@ const AlunoView = {
       turma: AlunoView.elementos.turma.value,
     };
   },
-
-  confirmarLimpeza() {
-    return confirm(
-      "Deseja remover todos os alunos cadastrados?"
-    )
-  },
-
-  exibirSucesso(mensagem) {
+  exibirMensagem(mensagem, tipo) {
     AlunoView.elementos.mensagem.textContent = mensagem;
 
-    AlunoView.elementos.mensagem.className = "mensagem sucesso";
+    AlunoView.elementos.mensagem.className = `mensagem ${tipo}`;
   },
+  criarCelula(valor) {
+    const celula = document.createElement("td");
 
-  exibirErro(mensagem) {
-    AlunoView.elementos.mensagem.textContent = mensagem;
+    celula.textContent = valor;
 
-    AlunoView.elementos.mensagem.className = "mensagem erro";
+    return celula;
   },
-
-  limparFormulario() {
-    AlunoView.elementos.formulario.reset();
-
-    AlunoView.elementos.ra.focus();
-  },
-
   exibirLista(alunos) {
-    const corpoTabela = AlunoView.elementos.corpoTabela;
-
-    corpoTabela.textContent = "";
-
-    AlunoView.elementos.totalAlunos.textContent =
-      `Total: ${alunos.length}`;
+    
+    AlunoView.elementos.corpoTabela.innerHTML = "";
 
     if (alunos.length === 0) {
       const linha = document.createElement("tr");
@@ -97,7 +63,7 @@ const AlunoView = {
       celula.textContent = "Nenhum aluno foi cadastrado.";
 
       linha.appendChild(celula);
-      corpoTabela.appendChild(linha);
+      AlunoView.elementos.corpoTabela.appendChild(linha);
 
       return;
     }
@@ -105,29 +71,51 @@ const AlunoView = {
     alunos.forEach((aluno) => {
       const linha = document.createElement("tr");
 
+      linha.appendChild(
+        AlunoView.criarCelula(aluno.id)
+      );
 
-      const valores = [
-        aluno.id,
-        aluno.ra,
-        aluno.nome,
-        aluno.email,
-        aluno.curso,
-        aluno.turma,
-        aluno.ativo ? "Ativo" : "Inativo"
-      ];
+      linha.appendChild(
+        AlunoView.criarCelula(aluno.ra)
+      );
 
-      valores.forEach((valor) => {
-        const celula = document.createElement("td");
+      linha.appendChild(
+        AlunoView.criarCelula(aluno.nome)
+      );
 
-        celula.textContent = valor;
+      linha.appendChild(
+        AlunoView.criarCelula(aluno.email)
+      );
 
-        linha.appendChild(celula);
-      });
+      linha.appendChild(
+        AlunoView.criarCelula(aluno.curso)
+      );
 
-      corpoTabela.appendChild(linha);
+      linha.appendChild(
+        AlunoView.criarCelula(aluno.turma)
+      );
+
+      linha.appendChild(
+        AlunoView.criarCelula(aluno.ativo ? "Sim" : "Não")
+      );
+
+      AlunoView.elementos.corpoTabela.appendChild(
+        linha
+      );
     });
   },
-  exibirJson(textoJson) {
-    AlunoView.elementos.saidaJson.textContent = textoJson;
+  exibirJson(alunos) {
+    AlunoView.elementos.saidaJson.textContent = JSON.stringify(alunos, null, 2);
   },
+  limparFormulario() {
+    AlunoView.elementos.formulario.reset();
+
+    AlunoView.elementos.ra.focus();
+  },
+  alterarEstadoFormulario(processando) {
+    AlunoView.elementos.botaoSalvar.disabled = processando;
+
+    AlunoView.elementos.botaoSalvar.textContent = 
+      processando ? "Salvando..." : "Cadastrar aluno";
+  }
 }

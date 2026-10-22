@@ -1,72 +1,77 @@
 const AlunoController = {
 
-  iniciar() {
+  async iniciar() {
 
     AlunoView.inicializar();
 
     AlunoView.configurarFormulario(
-      function (dados) {
-        AlunoController.cadastrar(dados);
-      }
+      AlunoController.cadastrar
     );
 
-    AlunoView.configurarBotaoLimpar(
-      function () {
-        AlunoController.limparDados();
-      }
-    )
+    AlunoView.exibirMensagem(
+      "Carregando alunos...", "informacao"
+    );
 
-    AlunoController.atualizarVisualizacao();
+    try {
+      await AlunoController.atualizarVisualizacao();
+
+      AlunoView.exibirMensagem("Dados carregados com sucesso.",
+        "sucesso"
+      );
+    } catch (err) {
+      AlunoView.exibirMensagem(err.message, "erro");
+    }
   },
-  cadastrar(dados) {
-    const resultado = AlunoService.cadastrar(dados);
+  async cadastrar(e) {
+    e.preventDefault();
 
-    if (!resultado.sucesso) {
-      AlunoView.exibirErro(resultado.mensagem);
+    const dadosInformados = AlunoView.lerDados();
+
+    const validacao = AlunoModel.validar(
+      dadosInformados
+    );
+
+    if (!validacao.sucesso) {
+      AlunoView.exibirMensagem(validacao.mensagem, "erro");
       return;
     }
 
-    AlunoView.exibirSucesso(
-      `Aluno ${resultado.aluno.nome} cadastrado com sucesso.`
+    AlunoView.alterarEstadoFormulario(true);
+
+    AlunoView.exibirMensagem(
+      "Enviando dados para o servidor...",
+      "informacao"
     );
 
-    AlunoView.limparFormulario();
-
-    AlunoController.atualizarVisualizacao();
-  },
-  limparDados() {
-    const alunos = AlunoService.listar();
-
-    if (alunos.length === 0) {
-      AlunoView.exibirErro(
-        "Não existem alunos para remover"
+    try {
+      const resultado = await AlunoService.cadastrar(
+        validacao.dados
       );
 
-      return;
+      await AlunoController.atualizarVisualizacao();
+
+      AlunoView.limparFormulario();
+
+      AlunoView.exibirMensagem(
+        resultado.mensagem,
+        "sucesso"
+      )
+    } catch (err) {
+
+      AlunoView.exibirMensagem(
+        err.message,
+        "erro"
+      )
+    } finally {
+      AlunoView.alterarEstadoFormulario(false)
     }
-
-    const confirmou = AlunoView.confirmarLimpeza();
-
-    if (!confirmou) {
-      return;
-    }
-
-    AlunoService.limpar();
-
-    AlunoView.exibirSucesso(
-      "Todos os alunos foram removidos"
-    )
-
-    AlunoController.atualizarVisualizacao();
   },
-  atualizarVisualizacao() {
-    const alunos = AlunoService.listar();
+  async atualizarVisualizacao() {
+    const alunos = await AlunoService.listar();
 
     AlunoView.exibirLista(alunos);
 
-    const textoJson = JSON.stringify(alunos, null, 2);
-
-    AlunoView.exibirJson(textoJson);
+    AlunoView.exibirJson(alunos);
   }
 };
 
