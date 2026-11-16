@@ -6,7 +6,7 @@ const HOST = "0.0.0.0";
 
 app.listen(PORTA, HOST, () => {
   console.log(
-    `Servidor Express disponível em` +
+    `Servidor Express disponível em ` +
     `http://localhost:${PORTA}`
   )
 });
