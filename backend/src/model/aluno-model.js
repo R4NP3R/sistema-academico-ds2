@@ -69,7 +69,7 @@ const AlunoModel = {
       curso: AlunoModel.normalizarTexto(dados?.curso),
       turma: AlunoModel.normalizarTexto(dados?.turma),
     }
-    
+    // console.log('aluno', alunoValidado)
     if (
       alunoValidado.ra === "" ||
       alunoValidado.nome === "" ||
@@ -125,7 +125,7 @@ const AlunoModel = {
     return {
       sucesso: true,
       status: 201,
-      alunos: {...aluno}
+      aluno: {...aluno}
     }
   },
   listar() {

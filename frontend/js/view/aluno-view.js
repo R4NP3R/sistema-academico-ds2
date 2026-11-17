@@ -1,5 +1,6 @@
 const AlunoView = {
   elementos: {},
+  modoEdicao: false,
   inicializar() {
     AlunoView.elementos.formulario =
       document.getElementById("form-aluno");
@@ -23,12 +24,45 @@ const AlunoView = {
       document.getElementById("saida-json");
     AlunoView.elementos.botaoSalvar =
       document.getElementById("botao-salvar");
+    AlunoView.elementos.botaoCancelar =
+      document.getElementById("botao-cancelar");
   },
   configurarFormulario(aoEnviar) {
     AlunoView.elementos.formulario.addEventListener(
       "submit",
       aoEnviar
     );
+  },
+  configurarBotaoCancelar(aoCancelar) {
+    AlunoView.elementos.botaoCancelar.addEventListener(
+      "click",
+      aoCancelar
+    )
+  },
+  configurarAcoesTabela(aoEditar, aoExcluir) {
+    AlunoView.elementos.corpoTabela
+      .addEventListener("click", e => {
+
+        const botao = e.target.closest(
+          "button[data-acao]"
+        );
+
+        if (!botao) {
+          return;
+        }
+
+        const acao = String(botao.dataset.acao).toLowerCase();
+        const id = Number(botao.dataset.id);
+
+        if (acao === "editar") {
+          aoEditar(id);
+          return;
+        }
+
+        if (acao === "excluir") {
+          aoExcluir(id);
+        }
+      })
   },
   lerDados() {
     return {
@@ -38,6 +72,13 @@ const AlunoView = {
       curso: AlunoView.elementos.curso.value,
       turma: AlunoView.elementos.turma.value,
     };
+  },
+  preencherFormulario(aluno) {
+    AlunoView.elementos.ra.value = aluno.ra;
+    AlunoView.elementos.nome.value = aluno.nome;
+    AlunoView.elementos.email.value = aluno.email;
+    AlunoView.elementos.curso.value = aluno.curso;
+    AlunoView.elementos.turma.value = aluno.turma;
   },
   exibirMensagem(mensagem, tipo) {
     AlunoView.elementos.mensagem.textContent = mensagem;
@@ -51,15 +92,29 @@ const AlunoView = {
 
     return celula;
   },
+  criarBotao(texto, classe, acao, id) {
+    const botao = document.createElement("button");
+
+    botao.type = "button";
+
+    botao.textContent = texto;
+    botao.className = classe;
+    botao.dataset.acao = acao;
+    botao.dataset.id = id;
+
+    return botao;
+  },
   exibirLista(alunos) {
-    
+
     AlunoView.elementos.corpoTabela.innerHTML = "";
+    AlunoView.elementos.totalAlunos.textContent =
+      `Total: ${alunos.length}`;
 
     if (alunos.length === 0) {
       const linha = document.createElement("tr");
       const celula = document.createElement("td");
 
-      celula.colSpan = 7;
+      celula.colSpan = 8;
       celula.textContent = "Nenhum aluno foi cadastrado.";
 
       linha.appendChild(celula);
@@ -99,6 +154,32 @@ const AlunoView = {
         AlunoView.criarCelula(aluno.ativo ? "Sim" : "Não")
       );
 
+      const celulaAcoes =
+        document.createElement("td");
+
+      celulaAcoes.className = "acoes-tabela";
+
+      const botaoEditar =
+        AlunoView.criarBotao(
+          "Editar",
+          "botao-editar",
+          "editar",
+          aluno.id
+        )
+
+      const botaoExcluir =
+        AlunoView.criarBotao(
+          "Excluir",
+          "botao-excluir",
+          "excluir",
+          aluno.id
+        );
+
+      celulaAcoes.appendChild(botaoEditar);
+      celulaAcoes.appendChild(botaoExcluir);
+
+      linha.appendChild(celulaAcoes);
+
       AlunoView.elementos.corpoTabela.appendChild(
         linha
       );
@@ -107,15 +188,49 @@ const AlunoView = {
   exibirJson(alunos) {
     AlunoView.elementos.saidaJson.textContent = JSON.stringify(alunos, null, 2);
   },
+  alterarModoEdicao(editando) {
+    AlunoView.modoEdicao = editando;
+
+    AlunoView.elementos.botaoCancelar.hidden = !editando;
+
+    AlunoView.elementos.botaoSalvar.textContent =
+      editando
+        ? "Atualizar aluno"
+        : "Cadastrar aluno";
+  },
+  alterarEstadoFormulario(processando) {
+    AlunoView.elementos.botaoSalvar.disabled = processando;
+
+    AlunoView.elementos.botaoCancelar.disabled = processando;
+
+    if (processando) {
+      AlunoView.elementos.botaoSalvar.textContent =
+        AlunoView.modoEdicao
+          ? "Atualizando..."
+          : "Salvando..."
+      return;
+    }
+
+    AlunoView.elementos.botaoSalvar.textContent =
+      AlunoView.modoEdicao
+        ? "Atualizar Aluno"
+        : "Cadastrar Aluno";
+  },
   limparFormulario() {
     AlunoView.elementos.formulario.reset();
 
     AlunoView.elementos.ra.focus();
   },
-  alterarEstadoFormulario(processando) {
-    AlunoView.elementos.botaoSalvar.disabled = processando;
-
-    AlunoView.elementos.botaoSalvar.textContent = 
-      processando ? "Salvando..." : "Cadastrar aluno";
+  confirmarExclusao() {
+    return confirm(
+      "Deseja realmente excluir este aluno?"
+    );
+  },
+  irParaFormulario() {
+    AlunoView.elementos.formulario.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+    AlunoView.elementos.ra.focus();
   }
 }

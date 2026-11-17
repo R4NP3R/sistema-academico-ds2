@@ -45,7 +45,6 @@ const AlunoController = {
     })
   },
   atualizar(req, res) {
-
     const id = req.params.id;
 
     const dados = req.body;
@@ -69,7 +68,6 @@ const AlunoController = {
     });
   },
   remover(req, res) {
-    
     const id = req.params.id;
     const resultado =
         AlunoModel.remover(id);

@@ -172,6 +172,37 @@ pre {
   background-color: #64748b;
 }
 
+.acoes-tabela {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acoes-tabela button {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.botao-editar {
+  background-color: #2563eb;
+}
+
+.botao-excluir {
+  background-color: #dc2626;
+}
+
+.acoes-tabela button:hover {
+  opacity: 0.85;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .botao-secundario:hover {
   background-color: #475569;
 }

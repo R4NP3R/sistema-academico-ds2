@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sistema Acadêmico DS !!</title>
+    <title>Sistema Acadêmico DS II</title>
     <link rel="stylesheet" href="css/estilos.css" />
     <script src="./js/model/aluno-model.js" defer></script>
     <script src="./js/service/aluno-service.js" defer></script>
@@ -80,6 +80,13 @@
           </div>
           <div class="acoes-formulario">
             <button id="botao-salvar" type="submit">Cadastrar aluno</button>
+            <button
+              id="botao-cancelar"
+              class="botao-secundario"
+              type="button"
+              hidden>
+              Cancelar edição
+            </button>
           </div>
         </form>
 
@@ -105,6 +112,7 @@
               <th>Curso</th>
               <th>Turma</th>
               <th>Situação</th>
+              <th>Ações</th>
             </thead>
 
             <tbody id="corpo-tabela-alunos"></tbody>
